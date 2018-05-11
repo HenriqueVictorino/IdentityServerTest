@@ -1,11 +1,8 @@
 ﻿using IdentityServer4;
 using IdentityServer4.Models;
 using IdentityServer4.Test;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace IdentityServerTest
 {
@@ -22,7 +19,7 @@ namespace IdentityServerTest
             {
                 new Client
                 {
-                    ClientId = "IdentityServerTestApp",
+                    ClientId = "IdentityServerTest.App",
                     ClientName = "IdentityServerTest",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     RedirectUris = { "http://localhost:5001/signin-oidc" },

@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.IdentityModel.Tokens.Jwt;
+using IdentityServer4;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IdentityServerTest
+namespace IdentityServerTest.App
 {
     public class Startup
     {
@@ -18,11 +20,20 @@ namespace IdentityServerTest
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddIdentityServer()
-                .AddDeveloperSigningCredential()
-                .AddInMemoryIdentityResources(Config.GetIdentityResources())
-                .AddInMemoryClients(Config.GetClients())
-                .AddTestUsers(Config.GetUsers());
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+            services.AddAuthentication(options => { options.DefaultScheme = "Cookies"; options.DefaultChallengeScheme = "oidc"; })
+                .AddCookie("Cookies")
+                .AddOpenIdConnect("iodc", options => {
+                    options.SignInScheme = "Cookies";
+                    options.Authority = "http://localhost:5000";
+                    options.RequireHttpsMetadata = false;
+                    options.ClientId = "IdentityServerTest.App";
+                    options.SaveTokens = true;
+                    options.Scope.Add(IdentityServerConstants.StandardScopes.Email);
+                    }) ;
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -30,16 +41,13 @@ namespace IdentityServerTest
         {
             if (env.IsDevelopment())
             {
-                app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
-            app.UseIdentityServer();            
-
+            app.UseAuthentication();
             app.UseStaticFiles();
 
             app.UseMvcWithDefaultRoute();
