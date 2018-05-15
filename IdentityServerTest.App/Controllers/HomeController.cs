@@ -5,15 +5,15 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServerTest.App.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
-        [Authorize]
         public IActionResult Index()
         {
             return View();
         }
 
-        [Authorize]
+        
         public IActionResult Secure()
         {
             return View();
